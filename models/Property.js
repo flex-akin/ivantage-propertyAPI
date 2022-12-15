@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Property =sequelize.define("Property", {
+    const Property = sequelize.define("Property", {
         propertyCode: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -118,6 +118,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             
         },
+        projectID:{
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate:{
+                notEmpty: true,
+            }
+
+        },
         image1: {
             type: DataTypes.STRING,
             
@@ -158,6 +166,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             
         },  
+
+        images: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                const values = [ this.image1, this.image2, this.image3, this.image4,
+                this.image5, this.image6, this.image7, this.image8, this.image9, this.image10 ]
+              return values
+            },
+            set(value) {
+              throw new Error('Do not try to set the `images` value!');
+            }
+          },
         flyer: {
             type: DataTypes.STRING,
            
@@ -166,6 +186,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
           
         },
-    })
+    },
+    {
+        freezeTableName: true
+      })
 return Property
 }
