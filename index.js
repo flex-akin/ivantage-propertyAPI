@@ -7,8 +7,13 @@ dotenv.config()
 app.use(express.json())
 
 //Import all routes
+    // Import property routes
 const property = require('./routes/property')
 app.use("/api/ivantage", property)
+
+    // Import project routes
+const project = require('./routes/project')
+app.use("/api/ivantage/project", project)
 
 
 

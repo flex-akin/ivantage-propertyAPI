@@ -55,6 +55,7 @@ exports.postProperty = async (req, res, next) => {
         const property = await Property.create(req.body)
         res.status(200).json({
             success: true,
+            message: `the property with property code ${property.propertyCode} have been uploaded`,
             property
     
             
@@ -62,7 +63,7 @@ exports.postProperty = async (req, res, next) => {
     }catch(err){
         console.log(err)
         return res.status(500).json({
-            message: "something went wrong"
+            message: "something went wrong, Try again"
         })
     }
     }
