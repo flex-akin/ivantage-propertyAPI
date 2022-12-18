@@ -68,4 +68,26 @@ exports.postProperty = async (req, res, next) => {
     }
     }
 
-    
+    exports.getSingleProperty = async (req, res, next) => {
+        try{
+           
+            const token = req.header('token');
+            if(!token) return res.status(400).send("Token not found")
+
+            const propertyId = req.query.propertyCode
+            const SingleProperty = await Property.findOne({ where: { propertyCode : propertyId } })
+           
+            res.status(200).json({
+                success: true,
+                SingleProperty
+        
+                
+            });
+        }catch(err){
+            console.log(err)
+            return res.status(500).json({
+                message: "something went wrong"
+            })
+        }
+        }
+        
