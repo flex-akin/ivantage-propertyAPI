@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true,
             }
         },
-        propertyName: {
+        projectName: {
             type: DataTypes.STRING,
             allowNull: false,
             validate:{
@@ -27,10 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         mapLocation: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
+          
         },
         state: {
             type: DataTypes.STRING,
@@ -55,17 +52,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         numberOfBedroooms: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
+          
         },
         numberOfWashroooms: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
+          
         },
         description: {
             type: DataTypes.STRING,
@@ -117,14 +108,6 @@ module.exports = (sequelize, DataTypes) => {
         businessName: {
             type: DataTypes.STRING,
             
-        },
-        projectID:{
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
-
         },
         image1: {
             type: DataTypes.STRING,
