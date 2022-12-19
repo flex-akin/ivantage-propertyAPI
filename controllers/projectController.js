@@ -45,7 +45,7 @@ exports.postProject = async (req, res, next) => {
         }
         }
 
-        exports.getAllProject = async (req, res, next) => {
+    exports.getAllProject = async (req, res, next) => {
             try{
                
                 const token = req.header('token');
@@ -55,7 +55,7 @@ exports.postProject = async (req, res, next) => {
                
                 res.status(200).json({
                     success: true,
-                    count: allProjectNames.length,
+                    count: allProject.length,
                     allProject
                 });
             }catch(err){

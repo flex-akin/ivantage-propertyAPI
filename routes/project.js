@@ -4,10 +4,12 @@ const { postProject, getAllProjectName, getAllProject } = require('../controller
 
 // GET
 router.route('/individualprojectnames').get(getAllProjectName)
-router.route('/allprojectnames').get(getAllProject)
+router.route('/allproject').get(getAllProject)
 
 
 // POST
 router.route('/addproject').post(postProject)
+
+
 
 module.exports = router

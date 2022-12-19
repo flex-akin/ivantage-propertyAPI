@@ -90,4 +90,53 @@ exports.postProperty = async (req, res, next) => {
             })
         }
         }
-        
+
+    exports.deleteProperty = async (req, res, next) => {
+        try{
+           
+            const token = req.header('token');
+            if(!token) return res.status(400).send("Token not found")
+
+            const propertyId = req.query.propertyCode
+            await Property.destroy({ where: { propertyCode : propertyId } })
+           
+            res.status(200).json({
+                success: true,
+            });
+        }catch(err){
+            console.log(err)
+            return res.status(500).json({
+                message: "something went wrong"
+            })
+        }
+        }   
+
+
+exports.editProperty = async (req, res, next) => {
+    try{
+        const token = req.header('token');
+        if(!token) return res.status(400).send("Token not found")
+        const propertyID = req.query.propertyCode
+        console.log(propertyID)
+        const property = await Property.update(req.body, {
+            where: {
+                propertyCode: propertyID
+            }
+        })
+        res.status(200).json({
+            success: true,
+            message: `the property with property code ${property.propertyCode} have been updated`,
+            property
+    
+            
+        });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            message: "something went wrong, Try again"
+        })
+    }
+    }
+
+
+   
