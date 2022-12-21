@@ -39,13 +39,15 @@ try{
             previousPage : previousPage,
             page :  page + 1,
             property : property.rows  
-        }
+        },
+        message : "All properties fetched successfully"
 
         
     });
 }catch(err){
     console.log(err)
     return res.status(500).json({
+        success: false,
         message: err.message
     })
 }
@@ -82,6 +84,7 @@ exports.postProperty = async (req, res, next) => {
            
             res.status(200).json({
                 success: true,
+                message : "Property fetched successfully",
                 SingleProperty
         
                 
@@ -89,7 +92,7 @@ exports.postProperty = async (req, res, next) => {
         }catch(err){
             console.log(err)
             return res.status(500).json({
-                message: "something went wrong"
+                message: err.message
             })
         }
         }
@@ -105,11 +108,14 @@ exports.postProperty = async (req, res, next) => {
            
             res.status(200).json({
                 success: true,
+                message : `Property with code ${propertyId} deleted successfully`
+
             });
         }catch(err){
             console.log(err)
             return res.status(500).json({
-                message: "something went wrong"
+                success: false,
+                message: err.message
             })
         }
         }   
@@ -136,7 +142,8 @@ exports.editProperty = async (req, res, next) => {
     }catch(err){
         console.log(err)
         return res.status(500).json({
-            message: "something went wrong, Try again"
+            success: false,
+            message: err.message
         })
     }
     }
@@ -206,18 +213,24 @@ exports.findProperty = async (req, res, next) => {
         }
     });
         const totalPages = (Math.ceil(property.count / size)) 
-        
-        const nextPage = page != (totalPages - 1) ? page + 2 : null
-        const previousPage = page != 0 ? page  : null
+        var nextPage = page != (totalPages - 1) ? page + 2 : null
+        var previousPage = page != 0 ? page  : null
+        page = page + 1
+        if (totalPages == 0) {
+         nextPage = null
+         previousPagem= null
+         page = 0
+        }
     
         res.status(200).json({
             success: true,
+            message: "property category fetched successfully",      
             data: {
                 count: property.count,
                 totalPages: totalPages,
                 nextPage : nextPage ,
                 previousPage : previousPage,
-                page :  page + 1,
+                page :  page,
                 property : property.rows  
             }
     
@@ -226,7 +239,8 @@ exports.findProperty = async (req, res, next) => {
     }catch(err){
         console.log(err)
         return res.status(500).json({
-            message: "something went wrong"
+            success: false,
+            message: err.message
         })
     }
     }
