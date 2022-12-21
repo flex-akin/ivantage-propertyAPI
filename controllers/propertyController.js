@@ -1,30 +1,8 @@
+const { where, Op } = require('sequelize');
 const db = require('../models/index')
 const Property = db.Property
 
 
-// reads in the cloudinary env variable - put this before
-require("dotenv").config();
-// we're aliasing version 2 and referencing with a variable
-const cloudinary = require("cloudinary").v2;
-// cloudinary picks up env and is now configured
-console.log(cloudinary.config().cloud_name);
-
-// Node.js SDK Uploader function returns a Promise
-cloudinary.uploader
-  .upload("./assets/images/breakfast.jpg", {
-    // image is the default resource type if you don't specify
-    resource_type: "image",
-  })
-  .then((result) => {
-    // JSON.stringify will provide a formatted string
-    // 1st param is the value to be output
-    // 2nd param null is a function that can be applied to the output
-    // 3rd param is the number of space characters to use for whitespace in formatting the output
-    console.log("success", JSON.stringify(result, null, 2));
-  })
-  .catch((error) => {
-    console.log("error", JSON.stringify(error, null, 2));
-  });
 
 
 exports.getProperty = async (req, res, next) => {
@@ -54,7 +32,7 @@ try{
 
     res.status(200).json({
         success: true,
-        content: {
+        data: {
             count: property.count,
             totalPages: totalPages,
             nextPage : nextPage ,
@@ -68,7 +46,7 @@ try{
 }catch(err){
     console.log(err)
     return res.status(500).json({
-        message: "something went wrong"
+        message: err.message
     })
 }
 }
@@ -165,3 +143,90 @@ exports.editProperty = async (req, res, next) => {
 
 
    
+exports.findProperty = async (req, res, next) => {
+    try{
+        const pageAsNumber = Number.parseInt(req.query.page)
+        const sizeAsNumber = Number.parseInt(req.query.size)
+        const property_type = req.query.propertyType
+        const bedrooms = Number.parseInt(req.query.numberOfBedroooms)
+        const area = req.query.area
+        const status = req.query.status
+        const state = req.query.state
+        const propertyData = await Property.findAll()
+        const maxPrice = Number.parseInt(req.query.maxPrice)
+        const minPrice = Number.parseInt(req.query.minPrice)
+
+        var allStatus = []
+        var allPropertyType = []
+        var allArea = []
+        var allState = []
+    
+        for (let i = 0; i < propertyData.length; i++) {
+            allStatus.push(propertyData[i].status)
+            allPropertyType.push(propertyData[i].propertyType)
+            allArea.push(propertyData[i].area)
+            allState.push(propertyData[i].state)
+          }
+        
+          function onlyUnique(value, index, self) {
+            return self.indexOf(value) === index;
+          }
+        
+        console.log(allStatus.filter(onlyUnique),allPropertyType.filter(onlyUnique), allArea.filter(onlyUnique), allState.filter(onlyUnique) )
+
+    
+        let page = 0
+        if(!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+            page = pageAsNumber - 1
+        }
+    
+        let size = 25
+        if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0){
+            size = sizeAsNumber
+        }
+
+        
+        const token = req.header('token');
+        if(!token) return res.status(400).send("Token not found")
+        const property = await Property.findAndCountAll({
+            limit: size,
+            offset: size * page,
+            where: {
+                propertyType: property_type == "" ? allPropertyType.filter(onlyUnique) : property_type,
+                numberOfBedroooms: bedrooms == "" ? [0,1,2,3,4,5,6,7,8,9] : [bedrooms],
+                state: state == "" ? allState.filter(onlyUnique) : [state],
+                area : area == "" ? allArea.filter(onlyUnique) : [area], 
+                status: status == "" ? allStatus.filter(onlyUnique) : [status],
+                price : {[Op.and] : [
+                    {[Op.lte]: maxPrice == NaN ? 1000000000 : maxPrice} ,
+                     {[Op.gte]: minPrice == NaN ? 0 : minPrice}
+
+                ]
+            }
+        }
+    });
+        const totalPages = (Math.ceil(property.count / size)) 
+        
+        const nextPage = page != (totalPages - 1) ? page + 2 : null
+        const previousPage = page != 0 ? page  : null
+    
+        res.status(200).json({
+            success: true,
+            data: {
+                count: property.count,
+                totalPages: totalPages,
+                nextPage : nextPage ,
+                previousPage : previousPage,
+                page :  page + 1,
+                property : property.rows  
+            }
+    
+            
+        });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            message: "something went wrong"
+        })
+    }
+    }

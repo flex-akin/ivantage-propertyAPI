@@ -26,7 +26,6 @@ exports.postProject = async (req, res, next) => {
             if(!token) return res.status(400).send("Token not found")
             const allProject = await Project.findAll()
             var allProjectNames = []
-            console.log("all[roject", allProject)
 
             for (let i = 0; i < allProject.length; i++) {
                 allProjectNames.push(allProject[i].projectName) 
