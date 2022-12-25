@@ -1,6 +1,9 @@
 const express = require("express")
 const router = express.Router()
-const { getProperty, postProperty, getSingleProperty, deleteProperty, editProperty, findProperty,  } = require('../controllers/propertyController')
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
+const { uploadS3 } = require('../helpers/multers3');
+const { getProperty, postProperty, getSingleProperty, deleteProperty, editProperty, findProperty, postPropertyImages, postPropertyDetails,  } = require('../controllers/propertyController')
 
 // GET
 router.route('/property').get(getProperty);
@@ -10,12 +13,17 @@ router.route('/findproperty').get(findProperty)
 
 //POST 
 router.route('/addproperty').post(postProperty)
+router.route('/postpropertyimages').post(upload.array('photos', 10),postPropertyImages)
+router.route('/postpropertydetails').post(uploadS3.array('photos', 10),postPropertyDetails)
+
 
 // DELETE
 router.route('/deleteproperty').delete(deleteProperty)
 
 //UPDATE
 router.route('/editproperty').patch(editProperty)
+
+
 
 
 module.exports = router

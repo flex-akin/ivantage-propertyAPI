@@ -1,6 +1,10 @@
+const { closeSync } = require('fs');
 const { where, Op } = require('sequelize');
+const { uploadFile } = require('../helpers/s3');
 const db = require('../models/index')
 const Property = db.Property
+
+
 
 
 
@@ -15,7 +19,7 @@ try{
         page = pageAsNumber - 1
     }
 
-    let size = 25
+    let size = 100
     if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0){
         size = sizeAsNumber
     }
@@ -53,10 +57,24 @@ try{
 }
 }
 
+
 exports.postProperty = async (req, res, next) => {
     try{
         const token = req.header('token');
         if(!token) return res.status(400).send("Token not found")
+        const propertyPostCode = req.body.propertyCode
+        var check = await Property.findOne({
+            where : {
+                propertyCode : propertyPostCode
+            }
+        })
+
+
+        if (check) return res.status(400).json({
+            success: false,
+            message : ` property code ${propertyPostCode} have been assignrd to property ${check.projectName}`
+        })
+
         const property = await Property.create(req.body)
         res.status(200).json({
             success: true,
@@ -68,7 +86,8 @@ exports.postProperty = async (req, res, next) => {
     }catch(err){
         console.log(err)
         return res.status(500).json({
-            message: "something went wrong, Try again"
+            success: false,
+            message: err.message
         })
     }
     }
@@ -126,7 +145,6 @@ exports.editProperty = async (req, res, next) => {
         const token = req.header('token');
         if(!token) return res.status(400).send("Token not found")
         const propertyID = req.query.propertyCode
-        console.log(propertyID)
         const property = await Property.update(req.body, {
             where: {
                 propertyCode: propertyID
@@ -216,12 +234,12 @@ exports.findProperty = async (req, res, next) => {
         var nextPage = page != (totalPages - 1) ? page + 2 : null
         var previousPage = page != 0 ? page  : null
         page = page + 1
-        if (totalPages == 0) {
-         nextPage = null
-         previousPagem= null
-         page = 0
-        }
     
+        if (totalPages == 0) return res.status(404).json({
+            success : false,
+            message : "No Property Found"
+        })
+        
         res.status(200).json({
             success: true,
             message: "property category fetched successfully",      
@@ -244,3 +262,130 @@ exports.findProperty = async (req, res, next) => {
         })
     }
     }
+
+    exports.postPropertyImages = async (req, res, next) => {
+        try{
+            const token = req.header('token');
+            if(!token) return res.status(400).send("Token not found")
+
+            const files = req.files
+            imageList = []
+            for (let i = 0; i < files.length; i++) {
+                const result = await uploadFile(files[i])
+                imageList.push(result.Location)
+              }
+
+           console.log( imageList )
+           console.log(files)
+            const property = await Property.create({
+                propertyCode: req.body.propertyCode,
+                developer: req.body.developer,
+                projectName: req.body.projectName,
+                completionDate: req.body.completionDate,
+                mapLocation: req.body.mapLocation,
+                state: req.body.state,
+                area: req.body.area,
+                propertyType: req.body.propertyType,
+                numberOfBedroooms: req.body.numberOfBedroooms,
+                numberOfWashroooms: req.body.numberOfBedroooms,
+                description: req.body.description,
+                availableUnits: req.body.availableUnits,
+                totalUnits: req.body.totalUnits,
+                price: req.body.price,
+                propertySize: req.body.propertySize,
+                propertyFeatures: req.body.propertyFeatures,
+                status: req.body.status,
+                businessType: req.body.businessType,
+                businessName: req.body.businessName,
+                image1: imageList[0], 
+                image2: imageList[1],  
+                image3: imageList[2],  
+                image4: imageList[3],  
+                image5: imageList[4],  
+                image6: imageList[5],  
+                image7: imageList[6],  
+                image8: imageList[7],  
+                image9: imageList[8],  
+                image10: imageList[9],  
+
+            })
+            res.status(200).json({
+                success: true,
+                data : {
+                    property,
+                },
+                message: `the property with property code ${property.propertyCode} have been uploaded`,
+                // property
+        
+                
+            });
+        }catch(err){
+            console.log(err)
+            return res.status(500).json({
+                message: err.message
+            })
+        }
+        }
+
+
+        exports.postPropertyDetails = async (req, res, next) => {
+            try{
+                const token = req.header('token');
+                if(!token) return res.status(400).send("Token not found")
+    
+                const files = req.files
+             
+    
+               console.log(files)
+               const property = await Property.create({
+                propertyCode: req.body.propertyCode,
+                developer: req.body.developer,
+                projectName: req.body.projectName,
+                completionDate: req.body.completionDate,
+                mapLocation: req.body.mapLocation,
+                state: req.body.state,
+                area: req.body.area,
+                propertyType: req.body.propertyType,
+                numberOfBedroooms: req.body.numberOfBedroooms,
+                numberOfWashroooms: req.body.numberOfBedroooms,
+                description: req.body.description,
+                availableUnits: req.body.availableUnits,
+                totalUnits: req.body.totalUnits,
+                price: req.body.price,
+                propertySize: req.body.propertySize,
+                propertyFeatures: req.body.propertyFeatures,
+                status: req.body.status,
+                businessType: req.body.businessType,
+                businessName: req.body.businessName,
+                image1: files[0] ? files[0].location : null , 
+                image2: files[1] ? files[1].location : null ,  
+                image3: files[2] ? files[2].location : null ,  
+                image4: files[3] ? files[3].location : null ,  
+                image5: files[4] ? files[4].location : null ,  
+                image6: files[5] ? files[5].location : null ,  
+                image7: files[6] ? files[6].location : null ,  
+                image8: files[7] ? files[7].location : null ,  
+                image9: files[8] ? files[8].location : null ,  
+                image10: files[9] ? files[9].location : null ,  
+
+            })
+               
+            
+                res.status(200).json({
+                    success: true,
+                    data : {
+                    message: `the property with property code ${property.propertyCode} have been uploaded`,
+                    property
+                        
+                    },
+                   
+            
+                    
+                });
+            }catch(err){
+                console.log(err)
+                return res.status(500).json({
+                    message: err.message
+                })
+            }
+            }

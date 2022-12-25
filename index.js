@@ -4,6 +4,7 @@ const dotenv = require("dotenv")
 const db = require("./models")
 
 dotenv.config()
+
 app.use(express.json())
 
 //Import all routes
