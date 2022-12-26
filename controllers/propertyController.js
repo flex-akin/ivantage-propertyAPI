@@ -122,19 +122,31 @@ exports.postProperty = async (req, res, next) => {
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
 
+            
             const propertyId = req.query.propertyCode
+            const property = await Property.findAll({
+                where :{
+                    propertyCode : propertyId
+                }
+            })
+            if (property.length == 0) return res.status(400).json({
+                success : false,
+                message : "This property doesn't exist"
+            })
+        
             await Property.destroy({ where: { propertyCode : propertyId } })
            
             res.status(200).json({
                 success: true,
-                message : `Property with code ${propertyId} deleted successfully`
+                message : `Property with code ${propertyId} deleted successfully`,
+
 
             });
         }catch(err){
             console.log(err)
             return res.status(500).json({
                 success: false,
-                message: err.message
+                message: err.message,
             })
         }
         }   
