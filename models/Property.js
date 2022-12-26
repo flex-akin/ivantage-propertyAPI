@@ -50,27 +50,21 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true,
             }
         },
-        numberOfBedroooms: {
+        numberOfBedrooms: {
             type: DataTypes.INTEGER,
           
         },
-        numberOfWashroooms: {
+        numberOfWashrooms: {
             type: DataTypes.INTEGER,
           
         },
         description: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
+            
         },
         availableUnits: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
+            type: DataTypes.STRING,
+           
         },
         totalUnits: {
             type: DataTypes.STRING,
@@ -89,17 +83,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         propertyFeatures: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
+            get() {
+                const rawValue = this.getDataValue('propertyFeatures')
+                const array = rawValue.split(",");
+                return array
             }
         },
         status: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate:{
-                notEmpty: true,
-            }
         },
         businessType: {
             type: DataTypes.STRING,
