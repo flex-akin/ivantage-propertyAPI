@@ -5,7 +5,7 @@ const db = require("./models")
 
 dotenv.config()
 
-app.use(express.json())
+app.use(express.json({ limit: '50mb', extended: true }))
 
 //Import all routes
     // Import property routes

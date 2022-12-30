@@ -11,6 +11,18 @@ const Property = db.Property
 
 exports.getProperty = async (req, res, next) => {
 try{
+    function removeItemAll(arr, value) {
+        var i = 0;
+        while (i < arr.length) {
+          if (arr[i] === value) {
+            arr.splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+        return arr;
+      }
+
     const pageAsNumber = Number.parseInt(req.query.page)
     const sizeAsNumber = Number.parseInt(req.query.size)
 
@@ -34,6 +46,40 @@ try{
     const nextPage = page != (totalPages - 1) ? page + 2 : null
     const previousPage = page != 0 ? page  : null
 
+    const propertyData = []
+    for ( let i = 0; i < property.count; i++ ) {
+        collectData = {
+            id: property.rows[i].id,
+            propertyCode: property.rows[i].propertyCode,
+            developer: property.rows[i].developer,
+            projectName: property.rows[i].projectName,
+            completionDate: property.rows[i].completionDate,
+            mapLocation: property.rows[i].mapLocation,
+            state: property.rows[i].state,
+            area: property.rows[i].area,
+            propertyType: property.rows[i].propertyType,
+            numberOfBedrooms: property.rows[i].numberOfBedrooms,
+            numberOfWashrooms: property.rows[i].numberOfBedrooms,
+            description: property.rows[i].description,
+            availableUnits: property.rows[i].availableUnits,
+            totalUnits: property.rows[i].totalUnits,
+            price: property.rows[i].price,
+            propertySize: property.rows[i].propertySize,
+            propertyFeatures: property.rows[i].propertyFeatures,
+            status: property.rows[i].status,
+            businessType: property.rows[i].businessType,
+            businessName: property.rows[i].businessName,
+            flyer: property.rows[i].flyer,
+            video: property.rows[i].video,
+            images: removeItemAll(property.rows[i].images, null)
+        }
+        propertyData.push(collectData)
+
+        
+
+    }
+
+    console.log(property.rows)
     res.status(200).json({
         success: true,
         data: {
@@ -42,7 +88,9 @@ try{
             nextPage : nextPage ,
             previousPage : previousPage,
             page :  page + 1,
-            property : property.rows  
+            property : propertyData
+
+            
         },
         message : "All properties fetched successfully"
 
@@ -72,7 +120,7 @@ exports.postProperty = async (req, res, next) => {
 
         if (check) return res.status(400).json({
             success: false,
-            message : ` property code ${propertyPostCode} have been assignrd to property ${check.projectName}`
+            message : ` property code ${propertyPostCode} have been assigned to property ${check.projectName}`
         })
 
         const property = await Property.create(req.body)
@@ -94,6 +142,17 @@ exports.postProperty = async (req, res, next) => {
 
     exports.getSingleProperty = async (req, res, next) => {
         try{
+            function removeItemAll(arr, value) {
+                var i = 0;
+                while (i < arr.length) {
+                  if (arr[i] === value) {
+                    arr.splice(i, 1);
+                  } else {
+                    ++i;
+                  }
+                }
+                return arr;
+              }
            
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
@@ -104,7 +163,31 @@ exports.postProperty = async (req, res, next) => {
             res.status(200).json({
                 success: true,
                 message : "Property fetched successfully",
-                SingleProperty
+                property : {
+                    id: SingleProperty.id,
+                    propertyCode: SingleProperty.propertyCode,
+                    developer: SingleProperty.developer,
+                    projectName: SingleProperty.projectName,
+                    completionDate: SingleProperty.completionDate,
+                    mapLocation: SingleProperty.mapLocation,
+                    state: SingleProperty.state,
+                    area: SingleProperty.area,
+                    propertyType: SingleProperty.propertyType,
+                    numberOfBedrooms: SingleProperty.numberOfBedrooms,
+                    numberOfWashrooms: SingleProperty.numberOfBedrooms,
+                    description: SingleProperty.description,
+                    availableUnits: SingleProperty.availableUnits,
+                    totalUnits: SingleProperty.totalUnits,
+                    price: SingleProperty.price,
+                    propertySize: SingleProperty.propertySize,
+                    propertyFeatures: SingleProperty.propertyFeatures,
+                    status: SingleProperty.status,
+                    businessType: SingleProperty.businessType,
+                    businessName: SingleProperty.businessName,
+                    flyer: SingleProperty.flyer,
+                    video: SingleProperty.video,
+                    images: removeItemAll(SingleProperty.images, null)
+                }
         
                 
             });
@@ -121,12 +204,10 @@ exports.postProperty = async (req, res, next) => {
            
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
-
-            
-            const propertyId = req.query.propertyCode
+            const propertyId = req.query.id
             const property = await Property.findAll({
                 where :{
-                    propertyCode : propertyId
+                    id : propertyId
                 }
             })
             if (property.length == 0) return res.status(400).json({
@@ -182,6 +263,20 @@ exports.editProperty = async (req, res, next) => {
    
 exports.findProperty = async (req, res, next) => {
     try{
+
+        function removeItemAll(arr, value) {
+        var i = 0;
+        while (i < arr.length) {
+        if (arr[i] === value) {
+            arr.splice(i, 1);
+        } else {
+            ++i;
+        }
+        }
+        return arr;
+    }
+
+
         const pageAsNumber = Number.parseInt(req.query.page)
         const sizeAsNumber = Number.parseInt(req.query.size)
         const property_type = req.query.propertyType
@@ -230,7 +325,7 @@ exports.findProperty = async (req, res, next) => {
             offset: size * page,
             where: {
                 propertyType: property_type == "" ? allPropertyType.filter(onlyUnique) : property_type,
-                numberOfBedroooms: bedrooms == "" ? [0,1,2,3,4,5,6,7,8,9] : [bedrooms],
+                numberOfBedrooms: bedrooms == "" ? [0,1,2,3,4,5,6,7,8,9] : [bedrooms],
                 state: state == "" ? allState.filter(onlyUnique) : [state],
                 area : area == "" ? allArea.filter(onlyUnique) : [area], 
                 status: status == "" ? allStatus.filter(onlyUnique) : [status],
@@ -251,6 +346,36 @@ exports.findProperty = async (req, res, next) => {
             success : false,
             message : "No Property Found"
         })
+
+        const propertyDetails = []
+    for ( let i = 0; i < property.count; i++ ) {
+        collectData = {
+            id: property.rows[i].id,
+            propertyCode: property.rows[i].propertyCode,
+            developer: property.rows[i].developer,
+            projectName: property.rows[i].projectName,
+            completionDate: property.rows[i].completionDate,
+            mapLocation: property.rows[i].mapLocation,
+            state: property.rows[i].state,
+            area: property.rows[i].area,
+            propertyType: property.rows[i].propertyType,
+            numberOfBedrooms: property.rows[i].numberOfBedrooms,
+            numberOfWashrooms: property.rows[i].numberOfBedrooms,
+            description: property.rows[i].description,
+            availableUnits: property.rows[i].availableUnits,
+            totalUnits: property.rows[i].totalUnits,
+            price: property.rows[i].price,
+            propertySize: property.rows[i].propertySize,
+            propertyFeatures: property.rows[i].propertyFeatures,
+            status: property.rows[i].status,
+            businessType: property.rows[i].businessType,
+            businessName: property.rows[i].businessName,
+            flyer: property.rows[i].flyer,
+            video: property.rows[i].video,
+            images: removeItemAll(property.rows[i].images, null)
+        }
+        propertyDetails.push(collectData)
+    }
         
         res.status(200).json({
             success: true,
@@ -261,7 +386,7 @@ exports.findProperty = async (req, res, next) => {
                 nextPage : nextPage ,
                 previousPage : previousPage,
                 page :  page,
-                property : property.rows  
+                property : propertyDetails 
             }
     
             
@@ -279,6 +404,19 @@ exports.findProperty = async (req, res, next) => {
         try{
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
+            const propertyPostCode = req.body.propertyCode
+            var check = await Property.findOne({
+                where : {
+                    propertyCode : propertyPostCode
+                }
+            })
+    
+    
+            if (check) return res.status(400).json({
+                success: false,
+                message : ` property code ${propertyPostCode} have been assignrd to property ${check.projectName}`
+            })
+    
 
             const files = req.files
             imageList = []
@@ -344,6 +482,19 @@ exports.findProperty = async (req, res, next) => {
             try{
                 const token = req.header('token');
                 if(!token) return res.status(400).send("Token not found")
+                const propertyPostCode = req.body.propertyCode
+                var check = await Property.findOne({
+                    where : {
+                        propertyCode : propertyPostCode
+                    }
+                })
+        
+        
+                if (check) return res.status(400).json({
+                    success: false,
+                    message : ` property code ${propertyPostCode} have been assignrd to property ${check.projectName}`
+                })
+        
     
                 const files = req.files
              

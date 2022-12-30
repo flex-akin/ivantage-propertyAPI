@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
             
         },
         availableUnits: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
            
         },
         totalUnits: {
