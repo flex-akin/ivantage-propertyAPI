@@ -16,6 +16,16 @@ app.use("/api/ivantage", property)
 const project = require('./routes/project')
 app.use("/api/ivantage/project", project)
 
+    // Import project routes
+const state = require('./routes/state')
+app.use("/api/ivantage/state", state)
+
+
+    // Import project routes
+const area = require('./routes/area')
+app.use("/api/ivantage/area", area)
+
+
 
 
 db.sequelize.sync().then(() => {

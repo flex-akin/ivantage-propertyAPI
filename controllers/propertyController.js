@@ -552,3 +552,63 @@ exports.findProperty = async (req, res, next) => {
                 })
             }
             }
+
+            exports.getSearchableFileds = async (req, res, next) => {
+                try{
+                    const token = req.header('token');
+                    if(!token) return res.status(400).send("Token not found")
+                  
+            
+                   const searchableFileds = [
+                    {
+                        label: "Maximum Price",
+                        value: "maxPrice",
+                        description: "The maximum price range"
+                    },
+                    {
+                        label: "Minimum Price",
+                        value: "minPrice",
+                        description: "The minimum price range"
+                    },
+                    {
+                        label: "Number of Bedrooms",
+                        value: "numberOfBedrooms",
+                        description: "number of bedrroms "
+                    },
+                    {
+                        label: "Property Type",
+                        value: "propertyType",
+                        description: "type could be either apratment, terrace, maisonette, etc."
+                    },
+                    {
+                        label: "state",
+                        value: "state",
+                        description: "the state where the property is located"
+                    },
+                    {
+                        label: "area",
+                        value: "area",
+                        description: "the area where the property is located "
+                    },
+                    {
+                        label: "status",
+                        value: "status",
+                        description: "status could be off plan or completed etc."
+                    },
+                   ]
+            
+                    res.status(200).json({
+                        success: true,
+                        message: `All searchable fileds successfully returned`,
+                        data: searchableFileds
+                
+                        
+                    });
+                }catch(err){
+                    console.log(err)
+                    return res.status(500).json({
+                        success: false,
+                        message: err.message
+                    })
+                }
+                }
