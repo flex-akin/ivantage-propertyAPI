@@ -364,6 +364,7 @@ const propertyData = [
    "image3": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260706/property%20pictures/5%20bedroom%20detached%20duplex%20with%20pool/IMG_3204_jipdwi.jpg",
    "image4": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260706/property%20pictures/5%20bedroom%20detached%20duplex%20with%20pool/IMG_3207_mpxmki.jpg",
    "image5": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260705/property%20pictures/5%20bedroom%20detached%20duplex%20with%20pool/IMG_3206_irhmns.jpg",
+
    "flyer": "",
    "video": ""
  },
@@ -387,6 +388,16 @@ const propertyData = [
    "status": "Completed",
    "businessType": "",
    "businessName": "",
+   "image1": "",
+   "image2": "",
+   "image3": "",
+   "image4": "",
+   "image5": "",
+   "image6": "",
+   "image7": "",
+   "image8": "",
+   "image9": "",
+   "image10": "",
    "flyer": "",
    "video": ""
  },
@@ -416,6 +427,10 @@ const propertyData = [
    "image4": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260731/property%20pictures/4%20bedroom%20semi-detached%20duplex/IMG_3222_vwtk1y.heic",
    "image5": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260730/property%20pictures/4%20bedroom%20semi-detached%20duplex/IMG_3218_olllct.heic",
    "image6": "https://res.cloudinary.com/dprk242dl/image/upload/v1671260698/property%20pictures/4%20bedroom%20semi-detached%20duplex/IMG_3223_takigq.heic",
+   "image7": "",
+   "image8": "",
+   "image9": "",
+   "image10": "",
    "flyer": "",
    "video": ""
  },
@@ -439,9 +454,21 @@ const propertyData = [
    "status": "",
    "businessType": "",
    "businessName": "",
+   "image1": "",
+   "image2": "",
+   "image3": "",
+   "image4": "",
+   "image5": "",
+   "image6": "",
+   "image7": "",
+   "image8": "",
+   "image9": "",
+   "image10": "",
    "flyer": "",
    "video": ""
- }
+ },
+ 
+ 
 ]
 
 exports.propertyData = propertyData

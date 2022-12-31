@@ -47,7 +47,7 @@ try{
     const previousPage = page != 0 ? page  : null
 
     const propertyData = []
-    for ( let i = 0; i < property.count; i++ ) {
+    for ( let i = 0; i < size ; i++ ) {
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
@@ -71,7 +71,7 @@ try{
             businessName: property.rows[i].businessName,
             flyer: property.rows[i].flyer,
             video: property.rows[i].video,
-            images: removeItemAll(property.rows[i].images, null)
+            images: removeItemAll(property.rows[i].images, "")
         }
         propertyData.push(collectData)
 
@@ -348,7 +348,7 @@ exports.findProperty = async (req, res, next) => {
         })
 
         const propertyDetails = []
-    for ( let i = 0; i < property.count; i++ ) {
+    for ( let i = 0; i < size; i++ ) {
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
