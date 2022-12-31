@@ -6,6 +6,20 @@ exports.postArea = async (req, res, next) => {
     try{
         const token = req.header('token');
         if(!token) return res.status(400).send("Token not found")
+
+        const checkArea = req.body.area
+
+        const areaCheck = Area.findAll({
+            where : {
+                area : checkArea
+            }
+        })
+
+        if (areaCheck) return res.json({
+            success: false,
+            message: ` ${checkArea} already Exists`
+        })
+
         const area = await Area.create(req.body)
         res.status(200).json({
             success: true,
