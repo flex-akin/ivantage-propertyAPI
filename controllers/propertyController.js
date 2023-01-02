@@ -293,15 +293,23 @@ exports.findProperty = async (req, res, next) => {
         const status = req.query.status
         const state = req.query.state
         const propertyData = await Property.findAll()
-        const maxPrice = Number.parseInt(req.query.maxPrice)
-        const minPrice = Number.parseInt(req.query.minPrice)
+        var maxPrice = Number.parseInt(req.query.maxPrice)
+        var minPrice = Number.parseInt(req.query.minPrice)
 
     
 
       if (isNaN(bedrooms)) {
         bedrooms = "bedrooms"
-
     }
+    if (isNaN(minPrice)) {
+        minPrice = "minPrice"
+    }
+    if (isNaN(maxPrice)) {
+        maxPrice = "maxPrice"
+    }
+
+
+
 
 
         var allStatus = []
@@ -346,8 +354,8 @@ exports.findProperty = async (req, res, next) => {
                 area : area == "" ? allArea.filter(onlyUnique) : [area], 
                 status: status == "" ? allStatus.filter(onlyUnique) : [status],
                 price : {[Op.and] : [
-                    {[Op.lte]: maxPrice == NaN ? 100000000000 : maxPrice} ,
-                     {[Op.gte]: minPrice == NaN ? 0 : minPrice}
+                    {[Op.lte]: maxPrice == "maxPrice" ? 100000000000 : maxPrice} ,
+                     {[Op.gte]: minPrice == "minprice" ? 0 : minPrice}
 
                 ]
             }
