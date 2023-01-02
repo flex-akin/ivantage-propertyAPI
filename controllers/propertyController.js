@@ -31,7 +31,7 @@ try{
         page = pageAsNumber - 1
     }
 
-    let size = 100
+    let size = 100000000
     if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0){
         size = sizeAsNumber
     }
@@ -46,8 +46,15 @@ try{
     const nextPage = page != (totalPages - 1) ? page + 2 : null
     const previousPage = page != 0 ? page  : null
 
+    var len = 0
+    if (size < property.count) {
+        len = size }
+        else{
+       len = property.count
+        }
+    
     const propertyData = []
-    for ( let i = 0; i < size ; i++ ) {
+    for ( let i = 0; i < len ; i++ ) {
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
@@ -84,6 +91,7 @@ try{
         success: true,
         data: {
             count: property.count,
+            pageDataCount : propertyData.length,
             totalPages: totalPages,
             nextPage : nextPage ,
             previousPage : previousPage,
@@ -157,8 +165,8 @@ exports.postProperty = async (req, res, next) => {
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
 
-            const propertyId = req.query.propertyCode
-            const SingleProperty = await Property.findOne({ where: { propertyCode : propertyId } })
+            const propertyId = req.query.id
+            const SingleProperty = await Property.findOne({ where: { id : propertyId } })
            
             res.status(200).json({
                 success: true,
@@ -186,7 +194,7 @@ exports.postProperty = async (req, res, next) => {
                     businessName: SingleProperty.businessName,
                     flyer: SingleProperty.flyer,
                     video: SingleProperty.video,
-                    images: removeItemAll(SingleProperty.images, null)
+                    images: removeItemAll(SingleProperty.images, "")
                 }
         
                 
@@ -280,13 +288,21 @@ exports.findProperty = async (req, res, next) => {
         const pageAsNumber = Number.parseInt(req.query.page)
         const sizeAsNumber = Number.parseInt(req.query.size)
         const property_type = req.query.propertyType
-        const bedrooms = Number.parseInt(req.query.numberOfBedroooms)
+        var bedrooms = Number.parseInt(req.query.numberOfBedroooms)
         const area = req.query.area
         const status = req.query.status
         const state = req.query.state
         const propertyData = await Property.findAll()
         const maxPrice = Number.parseInt(req.query.maxPrice)
         const minPrice = Number.parseInt(req.query.minPrice)
+
+    
+
+      if (isNaN(bedrooms)) {
+        bedrooms = "bedrooms"
+
+    }
+
 
         var allStatus = []
         var allPropertyType = []
@@ -312,7 +328,7 @@ exports.findProperty = async (req, res, next) => {
             page = pageAsNumber - 1
         }
     
-        let size = 25
+        let size = 100000000
         if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0){
             size = sizeAsNumber
         }
@@ -325,12 +341,12 @@ exports.findProperty = async (req, res, next) => {
             offset: size * page,
             where: {
                 propertyType: property_type == "" ? allPropertyType.filter(onlyUnique) : property_type,
-                numberOfBedrooms: bedrooms == "" ? [0,1,2,3,4,5,6,7,8,9] : [bedrooms],
+                numberOfBedrooms: bedrooms == "bedrooms" ? [0,1,2,3,4,5,6,7,8,9] : [bedrooms],
                 state: state == "" ? allState.filter(onlyUnique) : [state],
                 area : area == "" ? allArea.filter(onlyUnique) : [area], 
                 status: status == "" ? allStatus.filter(onlyUnique) : [status],
                 price : {[Op.and] : [
-                    {[Op.lte]: maxPrice == NaN ? 1000000000 : maxPrice} ,
+                    {[Op.lte]: maxPrice == NaN ? 100000000000 : maxPrice} ,
                      {[Op.gte]: minPrice == NaN ? 0 : minPrice}
 
                 ]
@@ -347,8 +363,15 @@ exports.findProperty = async (req, res, next) => {
             message : "No Property Found"
         })
 
+        var len = 0
+        if (size < property.count) {
+            len = size }
+            else{
+           len = property.count
+            }
+
         const propertyDetails = []
-    for ( let i = 0; i < size; i++ ) {
+    for ( let i = 0; i < len  ; i++ ) {
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
@@ -372,7 +395,7 @@ exports.findProperty = async (req, res, next) => {
             businessName: property.rows[i].businessName,
             flyer: property.rows[i].flyer,
             video: property.rows[i].video,
-            images: removeItemAll(property.rows[i].images, null)
+            images: removeItemAll(property.rows[i].images, "")
         }
         propertyDetails.push(collectData)
     }
