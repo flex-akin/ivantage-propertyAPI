@@ -165,8 +165,8 @@ exports.postProperty = async (req, res, next) => {
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
 
-            const propertyId = req.query.id
-            const SingleProperty = await Property.findOne({ where: { id : propertyId } })
+            const propertyId = req.query.propertyCode
+            const SingleProperty = await Property.findOne({ where: { propertyCode : propertyId } })
            
             res.status(200).json({
                 success: true,
@@ -212,10 +212,10 @@ exports.postProperty = async (req, res, next) => {
            
             const token = req.header('token');
             if(!token) return res.status(400).send("Token not found")
-            const propertyId = req.query.id
+            const propertyId = req.query.propertyCode
             const property = await Property.findAll({
                 where :{
-                    id : propertyId
+                    propertyCode : propertyId
                 }
             })
             if (property.length == 0) return res.status(400).json({
