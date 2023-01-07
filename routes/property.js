@@ -3,13 +3,14 @@ const router = express.Router()
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const { uploadS3 } = require('../helpers/multers3');
-const { getProperty, postProperty, getSingleProperty, deleteProperty, editProperty, findProperty, postPropertyImages, postPropertyDetails, getSearchableFileds,  } = require('../controllers/propertyController')
+const { getProperty, postProperty, getSingleProperty, deleteProperty, editProperty, findProperty, postPropertyImages, postPropertyDetails, getSearchableFileds, getPropertyByDeveloper,  } = require('../controllers/propertyController')
 
 // GET
 router.route('/property').get(getProperty);
 router.route('/getsingleproperty').get(getSingleProperty)
 router.route('/findproperty').get(findProperty)
 router.route('/getsearchablefileds').get(getSearchableFileds)
+router.route('/getpropertybydeveloper').get(getPropertyByDeveloper)
 
 
 

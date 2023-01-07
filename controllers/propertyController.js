@@ -53,8 +53,11 @@ try{
        len = property.count
         }
     
+        
     const propertyData = []
     for ( let i = 0; i < len ; i++ ) {
+        var images = removeItemAll(property.rows[i].images, "")
+        images = removeItemAll(images, null)
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
@@ -78,7 +81,7 @@ try{
             businessName: property.rows[i].businessName,
             flyer: property.rows[i].flyer,
             video: property.rows[i].video,
-            images: removeItemAll(property.rows[i].images, "")
+            images: images
         }
         propertyData.push(collectData)
 
@@ -167,7 +170,8 @@ exports.postProperty = async (req, res, next) => {
 
             const propertyId = req.query.propertyCode
             const SingleProperty = await Property.findOne({ where: { propertyCode : propertyId } })
-           
+            var images = removeItemAll(SingleProperty.images, "")
+            images = removeItemAll(images, null)
             res.status(200).json({
                 success: true,
                 message : "Property fetched successfully",
@@ -194,7 +198,7 @@ exports.postProperty = async (req, res, next) => {
                     businessName: SingleProperty.businessName,
                     flyer: SingleProperty.flyer,
                     video: SingleProperty.video,
-                    images: removeItemAll(SingleProperty.images, "")
+                    images: images
                 }
         
                 
@@ -380,6 +384,8 @@ exports.findProperty = async (req, res, next) => {
 
         const propertyDetails = []
     for ( let i = 0; i < len  ; i++ ) {
+        var images = removeItemAll(property.rows[i].images, "")
+        images = removeItemAll(images, null)
         collectData = {
             id: property.rows[i].id,
             propertyCode: property.rows[i].propertyCode,
@@ -403,7 +409,7 @@ exports.findProperty = async (req, res, next) => {
             businessName: property.rows[i].businessName,
             flyer: property.rows[i].flyer,
             video: property.rows[i].video,
-            images: removeItemAll(property.rows[i].images, "")
+            images: images,
         }
         propertyDetails.push(collectData)
     }
@@ -513,6 +519,7 @@ exports.findProperty = async (req, res, next) => {
             try{
                 const token = req.header('token');
                 if(!token) return res.status(400).send("Token not found")
+                console.log("req.body",req.body)
                 const propertyPostCode = req.body.propertyCode
                 var check = await Property.findOne({
                     where : {
@@ -643,3 +650,116 @@ exports.findProperty = async (req, res, next) => {
                     })
                 }
                 }
+
+
+
+                exports.getPropertyByDeveloper = async (req, res, next) => {
+                    try{
+                        function removeItemAll(arr, value) {
+                            var i = 0;
+                            while (i < arr.length) {
+                              if (arr[i] === value) {
+                                arr.splice(i, 1);
+                              } else {
+                                ++i;
+                              }
+                            }
+                            return arr;
+                          }
+                    
+                        const pageAsNumber = Number.parseInt(req.query.page)
+                        const sizeAsNumber = Number.parseInt(req.query.size)
+                        const developerName = req.query.developer
+                    
+                        let page = 0
+                        if(!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+                            page = pageAsNumber - 1
+                        }
+                    
+                        let size = 100000000
+                        if(!Number.isNaN(sizeAsNumber) && sizeAsNumber > 0){
+                            size = sizeAsNumber
+                        }
+                    
+                        const token = req.header('token');
+                        if(!token) return res.status(400).send("Token not found")
+                        const property = await Property.findAndCountAll({
+                            limit: size,
+                            offset: size * page,
+                            where : {
+                                developer : developerName
+                            }
+                        });
+                        const totalPages = (Math.ceil(property.count / size)) 
+                        const nextPage = page != (totalPages - 1) ? page + 2 : null
+                        const previousPage = page != 0 ? page  : null
+                    
+                        var len = 0
+                        if (size < property.count) {
+                            len = size }
+                            else{
+                           len = property.count
+                            }
+                        
+                            
+                        const propertyData = []
+                        for ( let i = 0; i < len ; i++ ) {
+                            var images = removeItemAll(property.rows[i].images, "")
+                            images = removeItemAll(images, null)
+                            collectData = {
+                                id: property.rows[i].id,
+                                propertyCode: property.rows[i].propertyCode,
+                                developer: property.rows[i].developer,
+                                projectName: property.rows[i].projectName,
+                                completionDate: property.rows[i].completionDate,
+                                mapLocation: property.rows[i].mapLocation,
+                                state: property.rows[i].state,
+                                area: property.rows[i].area,
+                                propertyType: property.rows[i].propertyType,
+                                numberOfBedrooms: property.rows[i].numberOfBedrooms,
+                                numberOfWashrooms: property.rows[i].numberOfBedrooms,
+                                description: property.rows[i].description,
+                                availableUnits: property.rows[i].availableUnits,
+                                totalUnits: property.rows[i].totalUnits,
+                                price: property.rows[i].price,
+                                propertySize: property.rows[i].propertySize,
+                                propertyFeatures: property.rows[i].propertyFeatures,
+                                status: property.rows[i].status,
+                                businessType: property.rows[i].businessType,
+                                businessName: property.rows[i].businessName,
+                                flyer: property.rows[i].flyer,
+                                video: property.rows[i].video,
+                                images: images
+                            }
+                            propertyData.push(collectData)
+                    
+                            
+                    
+                        }
+                    
+                        console.log(property.rows)
+                        res.status(200).json({
+                            success: true,
+                            data: {
+                                count: property.count,
+                                pageDataCount : propertyData.length,
+                                totalPages: totalPages,
+                                nextPage : nextPage ,
+                                previousPage : previousPage,
+                                page :  page + 1,
+                                property : propertyData
+                    
+                                
+                            },
+                            message : "All properties fetched successfully"
+                    
+                            
+                        });
+                    }catch(err){
+                        console.log(err)
+                        return res.status(500).json({
+                            success: false,
+                            message: err.message
+                        })
+                    }
+                    }

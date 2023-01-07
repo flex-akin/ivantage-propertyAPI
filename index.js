@@ -2,10 +2,12 @@ const express = require('express')
 const app = express()
 const dotenv = require("dotenv")
 const db = require("./models")
+const cors = require('cors')
 
 dotenv.config()
 
 app.use(express.json({ limit: '50mb', extended: true }))
+app.use(cors())
 
 //Import all routes
     // Import property routes
