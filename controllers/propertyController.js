@@ -1,6 +1,7 @@
 const { closeSync } = require('fs');
-const { where, Op } = require('sequelize');
+const { where, Op, json } = require('sequelize');
 const { uploadFile } = require('../helpers/s3');
+const { sequelize } = require('../models/index');
 const db = require('../models/index')
 const Property = db.Property
 
@@ -763,3 +764,78 @@ exports.findProperty = async (req, res, next) => {
                         })
                     }
                     }
+            
+        exports.searchFieldData = async  (req, res, next) => {
+            try{
+                const token = req.header('token');
+            if(!token) return res.status(400).send("Token not found")
+
+            function onlyUnique(value, index, self) {
+                return self.indexOf(value) === index;
+              }
+
+        const data = await Property.findAll({ attributes : ['area', 'state', 'propertyType', 'status'] ,
+        });
+            stateList = []
+            propertyTypeList = []
+            statusList = []
+            for(var i = 0; i < data.length; i++) {
+                var state = data[i].state;
+                var propertyType = data[i].propertyType;
+                var status = data[i].status;
+                stateList.push(state)
+                propertyTypeList.push(propertyType)
+                statusList.push(status)
+                
+            }
+
+            var states = stateList.filter(onlyUnique)
+            var properties = propertyTypeList.filter(onlyUnique)
+            var statuses = statusList.filter(onlyUnique)
+
+            var areas = []
+            for (let i = 0; i < states.length; i++){
+                const name = states[i]
+                myArray = []
+
+                
+                for (let j = 0; j < data.length; j++) {
+                    
+                    if (states[i] == data[j].state){
+                        myArray.push(data[j].area)
+
+                    }
+                    myArray = myArray.filter(onlyUnique)
+
+                }
+
+                var key = name
+                myObj = {
+                    [key] : myArray
+                }      
+                areas.push(myObj)
+
+            }
+
+
+
+            res.status(200).json({
+                success: true,
+                propertyType : properties,
+                states,
+                status: statuses,
+                areas
+
+
+            });
+
+            }
+            catch (err) {
+                console.log(err)
+                return res.status(500).json({
+                    success: false,
+                    message: err.message,
+                })
+
+            }
+        }
